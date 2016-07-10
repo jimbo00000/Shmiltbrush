@@ -16,6 +16,20 @@
 
 		<script src="three.js-master/build/three.js"></script>
 
+		<script id="vertexShader" type="x-shader/x-vertex">
+			void main()	{
+				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+		</script>
+
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			void main()	{
+				vec3 col = vec3(1., 1., 0.);
+				gl_FragColor = vec4( col, 1.);
+			}
+		</script>
+
 		<script>
 
 			var camera, scene, renderer;
@@ -32,7 +46,10 @@
 				scene = new THREE.Scene();
 
 				var geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
-				var material = new THREE.MeshBasicMaterial( );
+				var material = new THREE.ShaderMaterial( {
+					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+				} );
 
 				mesh = new THREE.Mesh( geometry, material );
 				scene.add( mesh );
