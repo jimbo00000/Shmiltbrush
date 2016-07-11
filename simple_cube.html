@@ -52,7 +52,9 @@
 		<script>
 
 			var camera, scene, renderer;
+			var geometry;
 			var mesh;
+			var liveInstances = 2;
 
 			init();
 			animate();
@@ -65,10 +67,10 @@
 				scene = new THREE.Scene();
 
 				var triangles = 1;
-				var instances = 64;
+				var maxInstances = 1024;
 
-				var geometry = new THREE.InstancedBufferGeometry();
-				geometry.maxInstancedCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
+				geometry = new THREE.InstancedBufferGeometry();
+				geometry.maxInstancedCount = liveInstances;
 				var vertices = new Float32Array( [
 					-1.0, -1.0,  0.0,
 					 1.0, -1.0,  0.0,
@@ -94,7 +96,7 @@
 				geometry.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 2 ) );
 
 
-				var offsets = new THREE.InstancedBufferAttribute( new Float32Array( instances * 3 ), 3, 1 );
+				var offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 3 ), 3, 1 );
 				for ( var i = 0, ul = offsets.count; i < ul; i++ ) {
 					var x = Math.random();
 					var y = Math.random();
@@ -146,6 +148,8 @@
 				var x = ( event.clientX / window.innerWidth );
 				var y = ( event.clientY / window.innerHeight );
 				console.log("click: ", x, y);
+				liveInstances++;
+				geometry.maxInstancedCount = liveInstances;
 
 				//document.addEventListener("mousemove",onMouseMove,false);
 				//document.addEventListener("mouseup",onMouseUp,false);
