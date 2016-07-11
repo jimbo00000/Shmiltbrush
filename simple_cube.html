@@ -143,7 +143,7 @@
 				var y = -( event.clientY / window.innerHeight );
 				//console.log("click: ", x, y, liveInstances);
 
-				offsets.setXYZ( liveInstances, x, y, 0 );
+				offsets.setXYZ( liveInstances, x, y, -.01*liveInstances );
 				offsets.needsUpdate = true;
 				liveInstances++;
 				geometry.maxInstancedCount = liveInstances;
