@@ -129,7 +129,7 @@
 				//
 
 				window.addEventListener( 'resize', onWindowResize, false );
-
+				window.addEventListener( 'mousedown', onMouseDown, false );
 			}
 
 			function onWindowResize() {
@@ -139,6 +139,19 @@
 
 				renderer.setSize( window.innerWidth, window.innerHeight );
 
+			}
+
+			function onMouseDown(evt) {
+
+				if (evt.which == 3)
+					return;
+
+				var x = ( event.clientX / window.innerWidth );
+				var y = ( event.clientY / window.innerHeight );
+				console.log("click: ", x, y);
+
+				//document.addEventListener("mousemove",onMouseMove,false);
+				//document.addEventListener("mouseup",onMouseUp,false);
 			}
 
 			function animate() {
