@@ -55,6 +55,7 @@
 			var geometry;
 			var mesh;
 			var liveInstances = 0;
+			var maxInstances = 32768;
 			var offsets;
 
 			init();
@@ -68,7 +69,6 @@
 				scene = new THREE.Scene();
 
 				var triangles = 1;
-				var maxInstances = 1024;
 
 				geometry = new THREE.InstancedBufferGeometry();
 				geometry.maxInstancedCount = liveInstances;
@@ -138,6 +138,8 @@
 
 			function addInstance(x, y)
 			{
+				if (liveInstances >= maxInstances)
+					return;
 
 				offsets.setXYZ( liveInstances, x, y, .01*liveInstances );
 				offsets.needsUpdate = true;
