@@ -23,15 +23,16 @@
 			uniform mat4 projectionMatrix;
 
 			attribute vec3 position;
+			attribute vec2 texcoord;
 
 			attribute vec3 offset;
 
-			//varying vec2 vUv;
+			varying vec2 vUv;
 
 			void main()
 			{
 				vec3 pos = position;
-				//vUv = uv;
+				vUv = texcoord;
 				pos += offset;
 				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
 				gl_Position = projectionMatrix * mvPosition;
@@ -40,10 +41,10 @@
 
 		<script id="fragmentShader" type="x-shader/x-fragment">
 			precision highp float;
-			//varying vec2 vUv;
+			varying vec2 vUv;
 			void main()
 			{
-				vec3 col = vec3(1.,1.,0.);//vec3(vUv, 0.);
+				vec3 col = vec3(vUv, 0.);
 				gl_FragColor = vec4( col, 1.);
 			}
 		</script>
@@ -79,6 +80,18 @@
 				] );
 
 				geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+
+				var texcoords = new Float32Array( [
+					0.0, 0.0,
+					1.0, 0.0,
+					1.0, 1.0,
+
+					1.0, 1.0,
+					0.0, 1.0,
+					0.0, 0.0
+				] );
+
+				geometry.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 2 ) );
 
 
 				var offsets = new THREE.InstancedBufferAttribute( new Float32Array( instances * 3 ), 3, 1 );
