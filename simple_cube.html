@@ -55,6 +55,7 @@
 			var geometry;
 			var mesh;
 			var liveInstances = 2;
+			var offsets;
 
 			init();
 			animate();
@@ -96,7 +97,7 @@
 				geometry.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 2 ) );
 
 
-				var offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 3 ), 3, 1 );
+				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 3 ), 3, 1 );
 				for ( var i = 0, ul = offsets.count; i < ul; i++ ) {
 					var x = Math.random();
 					var y = Math.random();
@@ -146,8 +147,11 @@
 					return;
 
 				var x = ( event.clientX / window.innerWidth );
-				var y = ( event.clientY / window.innerHeight );
-				console.log("click: ", x, y);
+				var y = -( event.clientY / window.innerHeight );
+				//console.log("click: ", x, y, liveInstances);
+
+				offsets.setXYZ( liveInstances, x, y, 0 );
+				offsets.needsUpdate = true;
 				liveInstances++;
 				geometry.maxInstancedCount = liveInstances;
 
