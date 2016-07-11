@@ -102,7 +102,8 @@
 
 				var material = new THREE.RawShaderMaterial( {
 					vertexShader: document.getElementById( 'vertexShader' ).textContent,
-					fragmentShader: document.getElementById( 'fragmentShader' ).textContent
+					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+					side: THREE.BackSide
 				} );
 
 				mesh = new THREE.Mesh( geometry, material );
@@ -140,10 +141,10 @@
 					return;
 
 				var x = ( event.clientX / window.innerWidth );
-				var y = -( event.clientY / window.innerHeight );
+				var y = ( event.clientY / window.innerHeight );
 				//console.log("click: ", x, y, liveInstances);
 
-				offsets.setXYZ( liveInstances, x, y, -.01*liveInstances );
+				offsets.setXYZ( liveInstances, x, y, .01*liveInstances );
 				offsets.needsUpdate = true;
 				liveInstances++;
 				geometry.maxInstancedCount = liveInstances;
@@ -155,9 +156,6 @@
 			function animate() {
 
 				requestAnimationFrame( animate );
-
-				mesh.rotation.x = 3.1415927;//+= 0.005;
-				mesh.rotation.y =0;//+= 0.01;
 
 				renderer.render( scene, camera );
 
