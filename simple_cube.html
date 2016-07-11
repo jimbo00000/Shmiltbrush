@@ -124,6 +124,7 @@
 
 				window.addEventListener( 'resize', onWindowResize, false );
 				window.addEventListener( 'mousedown', onMouseDown, false );
+				window.addEventListener( 'mouseup', onMouseUp, false );
 			}
 
 			function onWindowResize() {
@@ -135,6 +136,16 @@
 
 			}
 
+			function addInstance(x, y)
+			{
+
+				offsets.setXYZ( liveInstances, x, y, .01*liveInstances );
+				offsets.needsUpdate = true;
+				liveInstances++;
+				geometry.maxInstancedCount = liveInstances;
+
+			}
+
 			function onMouseDown(evt) {
 
 				if (evt.which == 3)
@@ -143,14 +154,26 @@
 				var x = ( event.clientX / window.innerWidth );
 				var y = ( event.clientY / window.innerHeight );
 				//console.log("click: ", x, y, liveInstances);
+				addInstance(x, y);
 
-				offsets.setXYZ( liveInstances, x, y, .01*liveInstances );
-				offsets.needsUpdate = true;
-				liveInstances++;
-				geometry.maxInstancedCount = liveInstances;
+				window.addEventListener( 'mousemove', onMouseMove, false );
 
-				//document.addEventListener("mousemove",onMouseMove,false);
-				//document.addEventListener("mouseup",onMouseUp,false);
+			}
+
+			function onMouseUp(evt) {
+
+				window.removeEventListener( 'mousemove', onMouseMove, false );
+
+			}
+
+			function onMouseMove(evt) {
+
+				var x = ( event.clientX / window.innerWidth );
+				var y = ( event.clientY / window.innerHeight );
+
+				//console.log("move", x, y);
+				addInstance(x, y);
+
 			}
 
 			function animate() {
