@@ -73,13 +73,13 @@
 				geometry = new THREE.InstancedBufferGeometry();
 				geometry.maxInstancedCount = liveInstances;
 				var vertices = new Float32Array( [
-					-1.0, -1.0,  0.0,
-					 1.0, -1.0,  0.0,
-					 1.0,  1.0,  0.0,
+					0.0, 0.0, 0.0,
+					1.0, 0.0, 0.0,
+					1.0, 1.0, 0.0,
 
-					 1.0,  1.0,  0.0,
-					-1.0,  1.0,  0.0,
-					-1.0, -1.0,  0.0
+					1.0, 1.0, 0.0,
+					0.0, 1.0, 0.0,
+					0.0, 0.0, 0.0
 				] );
 
 				geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
@@ -156,7 +156,7 @@
 
 				requestAnimationFrame( animate );
 
-				mesh.rotation.x =180;//+= 0.005;
+				mesh.rotation.x = 3.1415927;//+= 0.005;
 				mesh.rotation.y =0;//+= 0.01;
 
 				renderer.render( scene, camera );
