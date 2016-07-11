@@ -24,15 +24,18 @@
 
 			attribute vec3 position;
 			attribute vec2 texcoord;
+			attribute float id;
 
 			attribute vec3 offset;
 
 			varying vec2 vUv;
+			varying float vInstID;
 
 			void main()
 			{
 				vec3 pos = position* .1;
 				vUv = texcoord;
+				vInstID = float(id);
 				pos += offset;
 				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
 				gl_Position = projectionMatrix * mvPosition;
@@ -41,10 +44,15 @@
 
 		<script id="fragmentShader" type="x-shader/x-fragment">
 			precision highp float;
+
+			uniform float numInstances;
+
 			varying vec2 vUv;
+			varying float vInstID;
+
 			void main()
 			{
-				vec3 col = vec3(vUv, 0.);
+				vec3 col = vec3(vUv, vInstID/numInstances);
 				gl_FragColor = vec4( col, 1.);
 			}
 		</script>
@@ -52,8 +60,8 @@
 		<script>
 
 			var camera, scene, renderer;
-			var geometry;
-			var mesh;
+			var geometry, material, mesh;
+
 			var liveInstances = 0;
 			var maxInstances = 32768;
 			var offsets;
@@ -99,8 +107,17 @@
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 3 ), 3, 1 );
 				geometry.addAttribute( 'offset', offsets );
 
+				var idArray = new Float32Array( maxInstances );
+				for ( var i = 0; i < maxInstances; i ++ ) {
+					idArray[ i ] = i;
+				}
+				geometry.addAttribute( 'id', new THREE.InstancedBufferAttribute( idArray, 1, 1 ) );
 
-				var material = new THREE.RawShaderMaterial( {
+
+				material = new THREE.RawShaderMaterial( {
+					uniforms: {
+						numInstances: { value: 0.0 }
+					},
 					vertexShader: document.getElementById( 'vertexShader' ).textContent,
 					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
 					side: THREE.BackSide
@@ -182,6 +199,7 @@
 
 				requestAnimationFrame( animate );
 
+				material.uniforms.numInstances.value = liveInstances;
 				renderer.render( scene, camera );
 
 			}
