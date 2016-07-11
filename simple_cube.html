@@ -31,7 +31,7 @@
 
 			void main()
 			{
-				vec3 pos = position;
+				vec3 pos = position* .1;
 				vUv = texcoord;
 				pos += offset;
 				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
@@ -59,7 +59,7 @@
 
 			function init() {
 
-				camera = new THREE.OrthographicCamera( -5, 5, -5, 5, -1000, 1000 );
+				camera = new THREE.OrthographicCamera( 0, 1, 0, 1, -1000, 1000 );
 				camera.aspect = window.innerWidth / window.innerHeight;
 
 				scene = new THREE.Scene();
@@ -96,12 +96,9 @@
 
 				var offsets = new THREE.InstancedBufferAttribute( new Float32Array( instances * 3 ), 3, 1 );
 				for ( var i = 0, ul = offsets.count; i < ul; i++ ) {
-					var x = Math.random() - 0.5;
-					var y = Math.random() - 0.5;
-					var z = Math.random() - 0.5;
-					x *= 10;
-					y *= 10;
-					z *= 10;
+					var x = Math.random();
+					var y = Math.random();
+					var z = Math.random();
 					offsets.setXYZ( i, x, y, z );
 				}
 				geometry.addAttribute( 'offset', offsets );
