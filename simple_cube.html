@@ -18,14 +18,22 @@
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			precision highp float;
+
 			uniform mat4 modelViewMatrix;
 			uniform mat4 projectionMatrix;
-			//varying vec2 vUv;
+
 			attribute vec3 position;
+
+			attribute vec3 offset;
+
+			//varying vec2 vUv;
+
 			void main()
 			{
+				vec3 pos = position;
 				//vUv = uv;
-				vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+				pos += offset;
+				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
 				gl_Position = projectionMatrix * mvPosition;
 			}
 		</script>
@@ -56,13 +64,13 @@
 				scene = new THREE.Scene();
 
 				var triangles = 1;
-				var instances = 4;
+				var instances = 64;
 
 				var geometry = new THREE.InstancedBufferGeometry();
 				geometry.maxInstancedCount = instances; // set so its initalized for dat.GUI, will be set in first draw otherwise
 				var vertices = new Float32Array( [
 					-1.0, -1.0,  0.0,
-					 1.0, -2.0,  0.0,
+					 1.0, -1.0,  0.0,
 					 1.0,  1.0,  0.0,
 
 					 1.0,  1.0,  0.0,
@@ -81,7 +89,6 @@
 					x *= 10;
 					y *= 10;
 					z *= 10;
-					console.log(x,y,z);
 					offsets.setXYZ( i, x, y, z );
 				}
 				geometry.addAttribute( 'offset', offsets );
