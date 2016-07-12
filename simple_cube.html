@@ -153,8 +153,7 @@
 
 			}
 
-			function addInstance(x, y)
-			{
+			function addInstance(x, y) {
 				if (liveInstances >= maxInstances)
 					return;
 
@@ -162,6 +161,14 @@
 				offsets.needsUpdate = true;
 				liveInstances++;
 				geometry.maxInstancedCount = liveInstances;
+
+			}
+
+			//var lastInstancePos = {0,0};
+
+			function DoPaint(x, y) {
+
+				addInstance(x, y);
 
 			}
 
@@ -173,7 +180,7 @@
 				var x = ( event.clientX / window.innerWidth );
 				var y = ( event.clientY / window.innerHeight );
 				//console.log("click: ", x, y, liveInstances);
-				addInstance(x, y);
+				DoPaint(x, y);
 
 				window.addEventListener( 'mousemove', onMouseMove, false );
 
@@ -191,7 +198,7 @@
 				var y = ( event.clientY / window.innerHeight );
 
 				//console.log("move", x, y);
-				addInstance(x, y);
+				DoPaint(x, y);
 
 			}
 
