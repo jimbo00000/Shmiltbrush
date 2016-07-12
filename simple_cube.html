@@ -82,16 +82,18 @@
 				geometry.maxInstancedCount = liveInstances;
 				var verts = [];
 				var texs = [];
-				var s = 6;
+				var s = 16;
 				for (var i=0; i<s; ++i) {
 					verts.push(0.0, 0.0);
-					var p = 2*Math.PI*i/s;
-					var q = 2*Math.PI*(i+1)/s;
+					var m = i/s;
+					var n = (i+1)/s;
+					var p = 2*Math.PI*m;
+					var q = 2*Math.PI*n;
 					verts.push(Math.cos(p), Math.sin(p));
 					verts.push(Math.cos(q), Math.sin(q));
 					texs.push(0, 0);
-					texs.push(1, 0);
-					texs.push(0, 1);
+					texs.push(m, 1);
+					texs.push(n, 1);
 				}
 				var vertices = new Float32Array( verts );
 				geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 2 ) );
