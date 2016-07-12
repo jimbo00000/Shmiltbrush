@@ -156,8 +156,9 @@
 				window.addEventListener( 'resize', onWindowResize, false );
 				window.addEventListener( 'mousedown', onMouseDown, false );
 				window.addEventListener( 'mouseup', onMouseUp, false );
-				window.addEventListener( 'mousewheel', onMouseWheel, false );
 				window.addEventListener( 'mousemove', onMouseMove, false );
+				window.addEventListener( 'mousewheel', onMouseWheel, false );
+				window.addEventListener( 'MozMousePixelScroll', onMouseWheel, false );
 			}
 
 			function onWindowResize() {
@@ -251,10 +252,14 @@
 
 			}
 
-			function onMouseWheel(event) {
+			function onMouseWheel(ev) {
+
+				var amount = -ev.wheelDeltaY || ev.detail;
+				if ( amount === 0 ) return;
+				var dir = amount / Math.abs(amount);
 
 				var d = .05;
-				var incr = event.deltaY < 0 ? 1+d : 1-d;
+				var incr = dir < 0 ? 1+d : 1-d;
 				instanceSize *= incr;
 				instanceSize = Math.max(instanceSize, .05);
 				instanceSize = Math.min(instanceSize, 4.);
