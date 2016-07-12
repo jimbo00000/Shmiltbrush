@@ -166,19 +166,23 @@
 
 			var lastInstancePos = {};
 
-			function DoPaint(x, y) {
+			function DoPaint(x, y, doInterp=false) {
 
-				var a = new THREE.Vector2( lastInstancePos.x, lastInstancePos.y );
-				var b = new THREE.Vector2( x, y );
-				var d = a.distanceTo( b );
-				var smallstep = .01;
-				var numSteps = d / smallstep;
+				if (doInterp == true) {
+					var a = new THREE.Vector2( lastInstancePos.x, lastInstancePos.y );
+					var b = new THREE.Vector2( x, y );
+					var d = a.distanceTo( b );
+					var smallstep = .01;
+					var numSteps = d / smallstep;
 
-				for (var i=0; i<numSteps; ++i)
-				{
-					var t = i / numSteps;
-					var c = a.lerp(b, t);
-					addInstance(c.x, c.y);
+					for (var i=0; i<numSteps; ++i) {
+						var t = i / numSteps;
+						var c = a.lerp(b, t);
+						addInstance(c.x, c.y);
+					}
+				}
+				else {
+					addInstance(x, y);
 				}
 
 				lastInstancePos.x = x;
@@ -212,7 +216,7 @@
 				var y = ( event.clientY / window.innerHeight );
 
 				//console.log("move", x, y);
-				DoPaint(x, y);
+				DoPaint(x, y, true);
 
 			}
 
