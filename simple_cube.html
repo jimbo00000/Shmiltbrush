@@ -27,14 +27,20 @@
 			attribute float id;
 
 			attribute vec4 offset; // instanced
+			attribute float rot; // instanced
 
 			varying vec2 vUv;
 			varying float vInstID;
 
+			vec2 roto( in vec2 p, in float theta )
+			{
+				return mat2(cos(theta), -sin(theta), sin(theta), cos(theta)) * p;
+			}
+
 			void main()
 			{
 				float rad = offset.w;
-				vec3 pos = vec3(position, 0.) * .05 * rad;
+				vec3 pos = vec3(roto(position, -rot), 0.) * .05 * rad;
 				vUv = texcoord;
 				vInstID = float(id);
 				pos += offset.xyz;
@@ -66,7 +72,7 @@
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
-			var offsets;
+			var offsets, rots;
 			var instanceSize = 1;
 			var painting = false;
 
@@ -105,6 +111,9 @@
 
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				geometry.addAttribute( 'offset', offsets );
+
+				rots = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 1 ), 1, 1 );
+				geometry.addAttribute( 'rot', rots );
 
 				var idArray = new Float32Array( maxInstances );
 				for ( var i = 0; i < maxInstances; i ++ ) {
@@ -160,12 +169,16 @@
 
 			}
 
-			function addInstance(x, y) {
+			function addInstance(x, y, r) {
 				if (liveInstances >= maxInstances)
 					return;
 
 				offsets.setXYZW( liveInstances, x, y, .01*liveInstances, instanceSize );
 				offsets.needsUpdate = true;
+
+				rots.setX( liveInstances, r );
+				rots.needsUpdate = true;
+
 				liveInstances++;
 				geometry.maxInstancedCount = liveInstances;
 
@@ -178,6 +191,12 @@
 				if (doInterp == true) {
 					var a = new THREE.Vector2( lastInstancePos.x, lastInstancePos.y );
 					var b = new THREE.Vector2( x, y );
+
+					var ab = new THREE.Vector2();
+					ab.copy(b);
+					ab.sub(a);
+					var r = Math.atan2(ab.y, ab.x);
+
 					var d = a.distanceTo( b );
 					var smallstep = .01;
 					var numSteps = d / smallstep;
@@ -185,11 +204,11 @@
 					for (var i=0; i<numSteps; ++i) {
 						var t = i / numSteps;
 						var c = a.lerp(b, t);
-						addInstance(c.x, c.y);
+						addInstance(c.x, c.y, r);
 					}
 				}
 				else {
-					addInstance(x, y);
+					addInstance(x, y, 0);
 				}
 
 				lastInstancePos.x = x;
