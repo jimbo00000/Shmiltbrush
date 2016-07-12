@@ -81,16 +81,16 @@
 				geometry = new THREE.InstancedBufferGeometry();
 				geometry.maxInstancedCount = liveInstances;
 				var vertices = new Float32Array( [
-					0.0, 0.0, 0.0,
-					1.0, 0.0, 0.0,
-					1.0, 1.0, 0.0,
+					0.0, 0.0,
+					1.0, 0.0,
+					1.0, 1.0,
 
-					1.0, 1.0, 0.0,
-					0.0, 1.0, 0.0,
-					0.0, 0.0, 0.0
+					1.0, 1.0,
+					0.0, 1.0,
+					0.0, 0.0
 				] );
 
-				geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 2 ) );
 
 				var texcoords = new Float32Array( [
 					0.0, 0.0,
