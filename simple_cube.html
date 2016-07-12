@@ -164,11 +164,25 @@
 
 			}
 
-			//var lastInstancePos = {0,0};
+			var lastInstancePos = {};
 
 			function DoPaint(x, y) {
 
-				addInstance(x, y);
+				var a = new THREE.Vector2( lastInstancePos.x, lastInstancePos.y );
+				var b = new THREE.Vector2( x, y );
+				var d = a.distanceTo( b );
+				var smallstep = .01;
+				var numSteps = d / smallstep;
+
+				for (var i=0; i<numSteps; ++i)
+				{
+					var t = i / numSteps;
+					var c = a.lerp(b, t);
+					addInstance(c.x, c.y);
+				}
+
+				lastInstancePos.x = x;
+				lastInstancePos.y = y;
 
 			}
 
