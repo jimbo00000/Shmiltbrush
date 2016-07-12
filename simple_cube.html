@@ -22,7 +22,7 @@
 			uniform mat4 modelViewMatrix;
 			uniform mat4 projectionMatrix;
 
-			attribute vec3 position;
+			attribute vec2 position;
 			attribute vec2 texcoord;
 			attribute float id;
 
@@ -33,7 +33,7 @@
 
 			void main()
 			{
-				vec3 pos = position* .1;
+				vec3 pos = vec3(position, 0.) * .05;
 				vUv = texcoord;
 				vInstID = float(id);
 				pos += offset;
@@ -80,28 +80,23 @@
 
 				geometry = new THREE.InstancedBufferGeometry();
 				geometry.maxInstancedCount = liveInstances;
-				var vertices = new Float32Array( [
-					0.0, 0.0,
-					1.0, 0.0,
-					1.0, 1.0,
-
-					1.0, 1.0,
-					0.0, 1.0,
-					0.0, 0.0
-				] );
-
+				var verts = [];
+				var texs = [];
+				var s = 6;
+				for (var i=0; i<s; ++i) {
+					verts.push(0.0, 0.0);
+					var p = 2*Math.PI*i/s;
+					var q = 2*Math.PI*(i+1)/s;
+					verts.push(Math.cos(p), Math.sin(p));
+					verts.push(Math.cos(q), Math.sin(q));
+					texs.push(0, 0);
+					texs.push(1, 0);
+					texs.push(0, 1);
+				}
+				var vertices = new Float32Array( verts );
 				geometry.addAttribute( 'position', new THREE.BufferAttribute( vertices, 2 ) );
 
-				var texcoords = new Float32Array( [
-					0.0, 0.0,
-					1.0, 0.0,
-					1.0, 1.0,
-
-					1.0, 1.0,
-					0.0, 1.0,
-					0.0, 0.0
-				] );
-
+				var texcoords = new Float32Array( texs );
 				geometry.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 2 ) );
 
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 3 ), 3, 1 );
