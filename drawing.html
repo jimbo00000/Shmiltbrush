@@ -149,7 +149,10 @@
 
 
 				var geometry2 = new THREE.SphereGeometry( .1, 16, 16 );
-				var material2 = new THREE.MeshBasicMaterial( { color: 0xffff00 } );
+				var material2 = new THREE.MeshBasicMaterial( {
+					color: 0xffff00,
+					depthTest: false
+				} );
 				circle = new THREE.Mesh( geometry2, material2 );
 				scene.add( circle );
 
