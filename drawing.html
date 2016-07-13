@@ -58,11 +58,20 @@
 			varying vec2 vUv;
 			varying float vInstID;
 
+			#define PI 3.1415926535897932384
+
+			vec2 polar2cart( vec2 rt )
+			{
+				float theta = 2. * PI * rt.y;
+				return rt.x * vec2(cos(theta), sin(theta));
+			}
+
 			void main()
 			{
 				//vec3 col = vec3(vUv, vInstID/numInstances);
-				float wave = sin(.2*(10.*vUv.y + vInstID + 10.*time));
-				vec3 col = mix(vec3(1.,1.,0.), vec3(1.,.5,0.), wave);
+				vec2 c = polar2cart(vUv.yx);
+				float wave = sin(.2*(10.*c.x + vInstID + 10.*time));
+				vec3 col = mix(vec3(1.,0.,0.), vec3(0.,0.,1.), wave);
 				gl_FragColor = vec4( col, 1.);
 			}
 		</script>
@@ -93,7 +102,7 @@
 				geometry.maxInstancedCount = liveInstances;
 				var verts = [];
 				var texs = [];
-				var s = 16;
+				var s = 16*2;
 				for (var i=0; i<s; ++i) {
 					verts.push(0.0, 0.0);
 					var m = i/s;
@@ -102,7 +111,7 @@
 					var q = 2*Math.PI*n;
 					verts.push(Math.cos(p), Math.sin(p));
 					verts.push(Math.cos(q), Math.sin(q));
-					texs.push(0, 0);
+					texs.push(m, 0);
 					texs.push(m, 1);
 					texs.push(n, 1);
 				}
