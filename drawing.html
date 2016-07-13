@@ -159,6 +159,9 @@
 				window.addEventListener( 'mousemove', onMouseMove, false );
 				window.addEventListener( 'mousewheel', onMouseWheel, false );
 				window.addEventListener( 'MozMousePixelScroll', onMouseWheel, false );
+				window.addEventListener( 'touchstart', onTouchStart, false );
+				window.addEventListener( 'touchend', onTouchEnd, false );
+				window.addEventListener( 'touchmove', onTouchMove, false );
 			}
 
 			function onWindowResize() {
@@ -265,6 +268,44 @@
 				instanceSize = Math.min(instanceSize, 4.);
 
 				return false;
+			}
+
+			function onTouchStart(ev) {
+
+				ev.preventDefault();
+				var touch = ev.touches[0];
+				var x = ( touch.clientX / window.innerWidth );
+				var y = ( touch.clientY / window.innerHeight );
+				//console.log("click: ", x, y, liveInstances);
+				DoPaint(x, y);
+
+				painting = true;
+			}
+
+			function onTouchEnd(ev) {
+
+				ev.preventDefault();
+				painting = false;
+
+			}
+
+			function onTouchMove(ev) {
+
+				// todo: multitouch
+				ev.preventDefault();
+				var touch = ev.touches[0];
+				var x = ( touch.clientX / window.innerWidth );
+				var y = ( touch.clientY / window.innerHeight );
+				//console.log(ev);
+
+				circle.position.set( x, y, 0 );
+				var s = .5 * instanceSize
+				circle.scale.set( s, s, s );
+
+				if (painting) {
+					DoPaint(x, y, true);
+				}
+
 			}
 
 			function animate() {
