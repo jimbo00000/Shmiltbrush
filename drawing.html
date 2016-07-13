@@ -53,6 +53,7 @@
 			precision highp float;
 
 			uniform float numInstances;
+			uniform float time;
 
 			varying vec2 vUv;
 			varying float vInstID;
@@ -60,7 +61,7 @@
 			void main()
 			{
 				//vec3 col = vec3(vUv, vInstID/numInstances);
-				float wave = sin(.2*vInstID);
+				float wave = sin(.2*(vInstID+5.*time));
 				vec3 col = mix(vec3(1.,1.,0.), vec3(1.,.5,0.), wave);
 				gl_FragColor = vec4( col, 1.);
 			}
@@ -126,7 +127,8 @@
 
 				material = new THREE.RawShaderMaterial( {
 					uniforms: {
-						numInstances: { value: 0.0 }
+						numInstances: { value: 0.0 },
+						time: { value: 0.0 }
 					},
 					vertexShader: document.getElementById( 'vertexShader' ).textContent,
 					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
@@ -321,7 +323,9 @@
 
 				requestAnimationFrame( animate );
 
+				var time = performance.now(); // milliseconds
 				material.uniforms.numInstances.value = liveInstances;
+				material.uniforms.time.value = time * 0.001;
 				renderer.render( scene, camera );
 
 			}
