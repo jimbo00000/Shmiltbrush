@@ -291,12 +291,19 @@
 
 			function onTouchMove(ev) {
 
-				// todo: multitouch
 				ev.preventDefault();
 				var touch = ev.touches[0];
 				var x = ( touch.clientX / window.innerWidth );
 				var y = ( touch.clientY / window.innerHeight );
-				//console.log(ev);
+				if (ev.touches.length > 1 ) {
+					var touch2 = ev.touches[1];
+					var x2 = ( touch2.clientX / window.innerWidth );
+					var y2 = ( touch2.clientY / window.innerHeight );
+					var a = new THREE.Vector2( x, y );
+					var b = new THREE.Vector2( x2, y2 );
+					var d = a.distanceTo( b );
+					instanceSize = 5 * d;
+				}
 
 				circle.position.set( x, y, 0 );
 				var s = .5 * instanceSize
