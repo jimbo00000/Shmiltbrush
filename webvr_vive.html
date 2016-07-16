@@ -226,18 +226,31 @@
 				render();
 
 				var cont = controller1;
-				//console.log(cont.buttons, cont.axes);
-				//debugger;
+
 				if (cont.buttons) {
 					for (var i=0; i<4; ++i) {
 
 						var but = cont.buttons[i];
 						if (but.pressed) {
-							console.log("PRESS:",i);
+							console.log("PRESS:",i, cont);
 							//debugger;
 						}
 					}
+
+					var dpad = cont.buttons[0];
+					if (dpad.touched)
+					{
+						var ax = cont.axes;
+						console.log(dpad, ax);
+						if (ax) {
+							var a = new THREE.Vector2( ax[0], ax[1] );
+							if (a.length() > 0) {
+								console.log(dpad,a);
+							}
+						}
+					}
 				}
+
 			}
 
 			function render() {
