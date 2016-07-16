@@ -22,6 +22,8 @@ THREE.ViveController = function ( id ) {
 			scope.matrix.compose( scope.position, scope.quaternion, scope.scale );
 			scope.matrix.multiplyMatrices( scope.standingMatrix, scope.matrix );
 			scope.matrixWorldNeedsUpdate = true;
+			scope.buttons = gamepad.buttons;
+			scope.axes = gamepad.axes;
 
 			scope.visible = true;
 

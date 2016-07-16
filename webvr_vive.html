@@ -225,6 +225,19 @@
 				effect.requestAnimationFrame( animate );
 				render();
 
+				var cont = controller1;
+				//console.log(cont.buttons, cont.axes);
+				//debugger;
+				if (cont.buttons) {
+					for (var i=0; i<4; ++i) {
+
+						var but = cont.buttons[i];
+						if (but.pressed) {
+							console.log("PRESS:",i);
+							//debugger;
+						}
+					}
+				}
 			}
 
 			function render() {
