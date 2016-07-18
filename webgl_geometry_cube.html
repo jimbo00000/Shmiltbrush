@@ -35,16 +35,20 @@
 
 				scene = new THREE.Scene();
 
-				var texture = new THREE.TextureLoader().load( 'textures/crate.gif' );
-				var geometry = new THREE.BoxBufferGeometry( 200, 200, 200 );
+				var sz = 20
+				var texture = new THREE.TextureLoader().load( 'textures/UV_Grid_Sm.jpg' );
+				var geometry = new THREE.BoxBufferGeometry( sz, sz, sz );
 				var material = new THREE.MeshBasicMaterial( { map: texture } );
 				mesh = new THREE.Mesh( geometry, material );
+				mesh.matrix.setPosition( new THREE.Vector3( 0, sz/2-3, 0 ) );
+				mesh.matrixAutoUpdate = false;
 				scene.add( mesh );
 
-				var sgeo = new THREE.SphereGeometry(140, 32, 32);
+				var rad = 140000;
+				var sgeo = new THREE.SphereGeometry(rad, 32, 32*4);
 				var mat = new THREE.MeshBasicMaterial( {color: 0xffff00} );
-				var sph = new THREE.Mesh( sgeo, mat );
-				sph.matrix.setPosition( new THREE.Vector3(100,100,100) );
+				var sph = new THREE.Mesh( sgeo, material );
+				sph.matrix.setPosition( new THREE.Vector3( 0, -rad - 2, 0 ) );
 				sph.matrixAutoUpdate = false;
 				scene.add(sph);
 
