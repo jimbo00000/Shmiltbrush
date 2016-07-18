@@ -16,9 +16,11 @@
 	<body>
 
 		<script src="three.js-master/build/three.js"></script>
+		<script src="js/controls/OrbitControls.js"></script>
 
 		<script>
 
+			var controls;
 			var camera, scene, renderer;
 			var mesh;
 
@@ -45,6 +47,8 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
 
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+
 				//
 
 				window.addEventListener( 'resize', onWindowResize, false );
@@ -64,10 +68,9 @@
 
 				requestAnimationFrame( animate );
 
-				mesh.rotation.x += 0.005;
-				mesh.rotation.y += 0.01;
-
 				renderer.render( scene, camera );
+
+				controls.update();
 
 			}
 
