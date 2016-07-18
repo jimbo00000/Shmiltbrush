@@ -16,13 +16,14 @@
 	<body>
 
 		<script src="three.js-master/build/three.js"></script>
-		<script src="js/controls/OrbitControls.js"></script>
+		<script src="js/controls/FirstPersonControls.js"></script>
 
 		<script>
 
 			var controls;
 			var camera, scene, renderer;
 			var mesh;
+			var clock = new THREE.Clock();
 
 			init();
 			animate();
@@ -52,7 +53,12 @@
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
 
-				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				controls = new THREE.FirstPersonControls( camera );
+				controls.movementSpeed = 70;
+				controls.lookSpeed = 0.05;
+				controls.noFly = true;
+				controls.lookVertical = false;
+				controls.lon = -90;
 
 				//
 
@@ -75,7 +81,7 @@
 
 				renderer.render( scene, camera );
 
-				controls.update();
+				controls.update( clock.getDelta() );
 
 			}
 
