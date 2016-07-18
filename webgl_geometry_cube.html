@@ -19,7 +19,8 @@
 		<script src="js/controls/FirstPersonControls.js"></script>
 
 		<script>
-
+			// 1 micrometer to 100 billion light years in one scene, with 1 unit = 1 meter?  preposterous!  and yet...
+			var NEAR = 1e-6, FAR = 1e27;
 			var controls;
 			var camera, scene, renderer;
 			var mesh;
@@ -30,7 +31,7 @@
 
 			function init() {
 
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, NEAR, FAR );
 				camera.position.z = 400;
 
 				scene = new THREE.Scene();
@@ -52,7 +53,18 @@
 				sph.matrixAutoUpdate = false;
 				scene.add(sph);
 
-				renderer = new THREE.WebGLRenderer();
+				var moonrad = 140;
+				var moongeo = new THREE.SphereGeometry(moonrad, 32, 32);
+				var moonmat = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+				var moon = new THREE.Mesh( moongeo, material );
+				moon.matrix.setPosition( new THREE.Vector3( 0, 100, -1000 ) );
+				moon.matrixAutoUpdate = false;
+				scene.add(moon);
+
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+					logarithmicDepthBuffer: true
+				});
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				document.body.appendChild( renderer.domElement );
