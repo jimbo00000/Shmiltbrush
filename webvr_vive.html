@@ -35,14 +35,14 @@
 			uniform mat4 modelViewMatrix;
 			uniform mat4 projectionMatrix;
 
-			attribute vec2 position;
-			attribute vec2 texcoord;
+			attribute vec3 position;
+			attribute vec3 texcoord;
 			attribute float id;
 
 			attribute vec4 offset; // instanced
 			attribute float rot; // instanced
 
-			varying vec2 vUv;
+			varying vec3 vUv;
 			varying float vInstID;
 
 			vec2 roto( in vec2 p, in float theta )
@@ -53,7 +53,7 @@
 			void main()
 			{
 				float rad = offset.w;
-				vec3 pos = vec3(roto(position, -rot), 0.) * .05 * rad;
+				vec3 pos = position * .05 * rad;
 				vUv = texcoord;
 				vInstID = float(id);
 				pos += offset.xyz;
@@ -68,7 +68,7 @@
 			uniform float numInstances;
 			uniform float time;
 
-			varying vec2 vUv;
+			varying vec3 vUv;
 			varying float vInstID;
 
 			#define PI 3.1415926535897932384
@@ -85,7 +85,7 @@
 				vec2 c = polar2cart(vUv.yx);
 				float wave = sin(.2*(10.*c.x + vInstID + 10.*time));
 				vec3 col = mix(vec3(1.,0.,0.), vec3(0.,0.,1.), wave);
-				gl_FragColor = vec4( col, 1.);
+				gl_FragColor = vec4( vUv, 1.);
 			}
 		</script>
 
@@ -159,29 +159,44 @@
 				room.add( object );
 
 
-
 				instancedgeom = new THREE.InstancedBufferGeometry();
 				instancedgeom.maxInstancedCount = liveInstances;
-				var verts = [];
-				var texs = [];
-				var s = 16*2;
-				for (var i=0; i<s; ++i) {
-					verts.push(0.0, 0.0);
-					var m = i/s;
-					var n = (i+1)/s;
-					var p = 2*Math.PI*m;
-					var q = 2*Math.PI*n;
-					verts.push(Math.cos(p), Math.sin(p));
-					verts.push(Math.cos(q), Math.sin(q));
-					texs.push(m, 0);
-					texs.push(m, 1);
-					texs.push(n, 1);
-				}
-				var vertices = new Float32Array( verts );
-				instancedgeom.addAttribute( 'position', new THREE.BufferAttribute( vertices, 2 ) );
 
-				var texcoords = new Float32Array( texs );
-				instancedgeom.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 2 ) );
+				var vertices = new Float32Array( [
+					-1,-1,-1,
+					 1,-1,-1,
+					 1, 1,-1,
+					 1, 1,-1,
+					-1, 1,-1,
+					-1,-1,-1,
+
+					-1,-1, 1,
+					-1, 1, 1,
+					 1, 1, 1,
+					 1, 1, 1,
+					 1,-1, 1,
+					-1,-1, 1,
+
+				] );
+				instancedgeom.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+
+				var texcoords = new Float32Array( [
+					0,0,1,
+					1,0,1,
+					1,1,1,
+					1,1,1,
+					0,1,1,
+					0,0,1,
+
+					0,0,0,
+					1,0,0,
+					1,1,0,
+					1,1,0,
+					0,1,0,
+					0,0,0,
+
+				] );
+				instancedgeom.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 3 ) );
 
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				instancedgeom.addAttribute( 'offset', offsets );
