@@ -45,6 +45,7 @@
 			var camera, scene, renderer;
 			var effect, controls;
 			var controller1, controller2;
+			var cursorgeom;
 
 			var room;
 
@@ -122,6 +123,11 @@
 
 				} );
 
+				var cubesz = .2
+				var geom3 = new THREE.BoxGeometry( cubesz, cubesz, cubesz );
+				cursorgeom = new THREE.Mesh( geom3, new THREE.MeshLambertMaterial( { color: 0x0000ff } ) );
+				controller1.add(cursorgeom);
+
 				effect = new THREE.VREffect( renderer );
 
 				if ( WEBVR.isAvailable() === true ) {
@@ -173,6 +179,12 @@
 							var a = new THREE.Vector2( ax[0], ax[1] );
 							if (a.length() > 0) {
 								console.log(dpad,a);
+								var sz = .5 + .5 * a.y;
+								console.log("sz:", sz);
+								cursorgeom.scale.x = sz;
+								cursorgeom.scale.y = sz;
+								cursorgeom.scale.z = sz;
+								cursorgeom.needsUpdate = true
 							}
 						}
 					}
