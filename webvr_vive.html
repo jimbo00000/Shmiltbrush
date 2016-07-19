@@ -29,6 +29,66 @@
 
 		<script src="js/loaders/OBJLoader.js"></script>
 
+		<script id="vertexShader" type="x-shader/x-vertex">
+			precision highp float;
+
+			uniform mat4 modelViewMatrix;
+			uniform mat4 projectionMatrix;
+
+			attribute vec2 position;
+			attribute vec2 texcoord;
+			attribute float id;
+
+			attribute vec4 offset; // instanced
+			attribute float rot; // instanced
+
+			varying vec2 vUv;
+			varying float vInstID;
+
+			vec2 roto( in vec2 p, in float theta )
+			{
+				return mat2(cos(theta), -sin(theta), sin(theta), cos(theta)) * p;
+			}
+
+			void main()
+			{
+				float rad = offset.w;
+				vec3 pos = vec3(roto(position, -rot), 0.) * .05 * rad;
+				vUv = texcoord;
+				vInstID = float(id);
+				pos += offset.xyz;
+				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
+				gl_Position = projectionMatrix * mvPosition;
+			}
+		</script>
+
+		<script id="fragmentShader" type="x-shader/x-fragment">
+			precision highp float;
+
+			uniform float numInstances;
+			uniform float time;
+
+			varying vec2 vUv;
+			varying float vInstID;
+
+			#define PI 3.1415926535897932384
+
+			vec2 polar2cart( vec2 rt )
+			{
+				float theta = 2. * PI * rt.y;
+				return rt.x * vec2(cos(theta), sin(theta));
+			}
+
+			void main()
+			{
+				//vec3 col = vec3(vUv, vInstID/numInstances);
+				vec2 c = polar2cart(vUv.yx);
+				float wave = sin(.2*(10.*c.x + vInstID + 10.*time));
+				vec3 col = mix(vec3(1.,0.,0.), vec3(0.,0.,1.), wave);
+				gl_FragColor = vec4( col, 1.);
+			}
+		</script>
+
 		<script>
 
 			if ( WEBVR.isLatestAvailable() === false ) {
@@ -45,7 +105,13 @@
 			var camera, scene, renderer;
 			var effect, controls;
 			var controller1, controller2;
-			var cursorgeom;
+			var cursorgeom, instancedgeom;
+
+			var liveInstances = 0;
+			var maxInstances = 32768;
+			var offsets, rots;
+			var instanceSize = 1;
+			var painting = false;
 
 			var room;
 
@@ -91,6 +157,60 @@
 				object.position.y = -2;
 				object.position.z = 0;
 				room.add( object );
+
+
+
+				instancedgeom = new THREE.InstancedBufferGeometry();
+				instancedgeom.maxInstancedCount = liveInstances;
+				var verts = [];
+				var texs = [];
+				var s = 16*2;
+				for (var i=0; i<s; ++i) {
+					verts.push(0.0, 0.0);
+					var m = i/s;
+					var n = (i+1)/s;
+					var p = 2*Math.PI*m;
+					var q = 2*Math.PI*n;
+					verts.push(Math.cos(p), Math.sin(p));
+					verts.push(Math.cos(q), Math.sin(q));
+					texs.push(m, 0);
+					texs.push(m, 1);
+					texs.push(n, 1);
+				}
+				var vertices = new Float32Array( verts );
+				instancedgeom.addAttribute( 'position', new THREE.BufferAttribute( vertices, 2 ) );
+
+				var texcoords = new Float32Array( texs );
+				instancedgeom.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 2 ) );
+
+				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
+				instancedgeom.addAttribute( 'offset', offsets );
+
+				rots = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 1 ), 1, 1 );
+				instancedgeom.addAttribute( 'rot', rots );
+
+				var idArray = new Float32Array( maxInstances );
+				for ( var i = 0; i < maxInstances; i ++ ) {
+					idArray[ i ] = i;
+				}
+				instancedgeom.addAttribute( 'id', new THREE.InstancedBufferAttribute( idArray, 1, 1 ) );
+
+				var imat = new THREE.RawShaderMaterial( {
+					uniforms: {
+						numInstances: { value: 0.0 },
+						time: { value: 0.0 }
+					},
+					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+					side: THREE.BackSide
+				} );
+
+
+				mesh = new THREE.Mesh( instancedgeom, imat );
+				scene.add( mesh );
+
+
+
 
 				//
 
@@ -142,6 +262,26 @@
 
 			}
 
+			function addInstance(x, y, z, r) {
+
+				console.log("addInstance: ", x, y, z, liveInstances)
+				if (liveInstances >= maxInstances)
+					return;
+
+				offsets.setXYZW( liveInstances, x, y, z, instanceSize );
+				offsets.needsUpdate = true;
+
+				liveInstances++;
+				instancedgeom.maxInstancedCount = liveInstances;
+
+			}
+
+			function DoPaint(x, y, z) {
+
+				console.log("DOPING PAINT");
+				addInstance(x, y, z);
+			}
+
 			function onWindowResize() {
 
 				camera.aspect = window.innerWidth / window.innerHeight;
@@ -165,8 +305,10 @@
 
 						var but = cont.buttons[i];
 						if (but.pressed) {
-							console.log("PRESS:",i, cont);
+							//console.log("PRESS:",i, cont);
 							//debugger;
+							var p = controller1.position;
+							DoPaint(p.x, p.y, p.z);
 						}
 					}
 
@@ -178,9 +320,9 @@
 						if (ax) {
 							var a = new THREE.Vector2( ax[0], ax[1] );
 							if (a.length() > 0) {
-								console.log(dpad,a);
+								//console.log(dpad,a);
 								var sz = .5 + .5 * a.y;
-								console.log("sz:", sz);
+								instanceSize = sz;
 								cursorgeom.scale.x = sz;
 								cursorgeom.scale.y = sz;
 								cursorgeom.scale.z = sz;
