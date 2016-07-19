@@ -105,7 +105,7 @@
 			var camera, scene, renderer;
 			var effect, controls;
 			var controller1, controller2;
-			var cursorgeom, instancedgeom;
+			var cursorgeom, instancedgeom, instancedmesh;
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
@@ -206,8 +206,8 @@
 				} );
 
 
-				mesh = new THREE.Mesh( instancedgeom, imat );
-				scene.add( mesh );
+				instancedmesh = new THREE.Mesh( instancedgeom, imat );
+				scene.add( instancedmesh );
 
 
 
@@ -248,6 +248,15 @@
 				cursorgeom = new THREE.Mesh( geom3, new THREE.MeshLambertMaterial( { color: 0x0000ff } ) );
 				controller1.add(cursorgeom);
 
+
+				//console.log(controller1);
+				//console.log(controller1.standingMatrix);
+				console.log(instancedmesh);
+				instancedmesh.matrix = controller1.standingMatrix;
+				instancedmesh.matrixAutoUpdate = false;
+				console.log(instancedmesh);
+
+
 				effect = new THREE.VREffect( renderer );
 
 				if ( WEBVR.isAvailable() === true ) {
@@ -264,7 +273,6 @@
 
 			function addInstance(x, y, z, r) {
 
-				console.log("addInstance: ", x, y, z, liveInstances)
 				if (liveInstances >= maxInstances)
 					return;
 
@@ -278,7 +286,6 @@
 
 			function DoPaint(x, y, z) {
 
-				console.log("DOPING PAINT");
 				addInstance(x, y, z);
 			}
 
@@ -316,7 +323,7 @@
 					if (dpad.touched)
 					{
 						var ax = cont.axes;
-						console.log(dpad, ax);
+						//console.log(dpad, ax);
 						if (ax) {
 							var a = new THREE.Vector2( ax[0], ax[1] );
 							if (a.length() > 0) {
