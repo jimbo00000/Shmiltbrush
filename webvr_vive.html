@@ -373,12 +373,14 @@
 
 			}
 
-			function addInstance(x, y, z, r) {
+			function addInstance(controller) {
 
 				if (liveInstances >= maxInstances)
 					return;
 
-				offsets.setXYZW( liveInstances, x, y, z, instanceSize );
+				var p = controller.position;
+
+				offsets.setXYZW( liveInstances, p.x, p.y, p.z, instanceSize );
 				offsets.needsUpdate = true;
 
 				liveInstances++;
@@ -386,9 +388,9 @@
 
 			}
 
-			function DoPaint(x, y, z) {
+			function DoPaint(controller) {
 
-				addInstance(x, y, z);
+				addInstance(controller);
 			}
 
 			function onWindowResize() {
@@ -414,10 +416,7 @@
 
 						var but = cont.buttons[i];
 						if (but.pressed) {
-							//console.log("PRESS:",i, cont);
-							//debugger;
-							var p = controller1.position;
-							DoPaint(p.x, p.y, p.z);
+							DoPaint(controller1);
 						}
 					}
 
