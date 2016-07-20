@@ -55,7 +55,8 @@
 			{
 				float rad = offset.w;
 				vec3 pos = qtransform(rot, position) * .05 * rad;
-				vUv = texcoord;
+				//vUv = texcoord;
+				vUv = .5*position + vec3(.5);
 				vInstID = float(id);
 				pos += offset.xyz;
 				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
@@ -93,7 +94,7 @@
 			void main()
 			{
 				vUv = position + vec3(.5);
-				gl_Position = projectionMatrix * modelViewMatrix * vec4( .2 *position, 1.0 );
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( .1 *position, 1.0 );
 			}
 		</script>
 
