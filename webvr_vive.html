@@ -372,6 +372,7 @@
 
 				var p = controller.position;
 				var q = controller.quaternion;
+				q.inverse();
 
 				offsets.setXYZW( liveInstances, p.x, p.y, p.z, instanceSize );
 				offsets.needsUpdate = true;
