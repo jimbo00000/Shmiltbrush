@@ -29,7 +29,7 @@
 
 		<script src="js/loaders/OBJLoader.js"></script>
 
-		<script id="vertexShader" type="x-shader/x-vertex">
+		<script id="instanceVertexShader" type="x-shader/x-vertex">
 			precision highp float;
 
 			uniform mat4 modelViewMatrix;
@@ -62,7 +62,7 @@
 			}
 		</script>
 
-		<script id="fragmentShader" type="x-shader/x-fragment">
+		<script id="instanceFragmentShader" type="x-shader/x-fragment">
 			precision highp float;
 
 			uniform float numInstances;
@@ -269,8 +269,8 @@
 						numInstances: { value: 0.0 },
 						time: { value: 0.0 }
 					},
-					vertexShader: document.getElementById( 'vertexShader' ).textContent,
-					fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
+					vertexShader: document.getElementById( 'instanceVertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'instanceFragmentShader' ).textContent,
 					side: THREE.BackSide
 				} );
 
