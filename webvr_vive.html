@@ -40,20 +40,21 @@
 			attribute float id;
 
 			attribute vec4 offset; // instanced
-			attribute float rot; // instanced
+			attribute vec4 rot; // instanced
 
 			varying vec3 vUv;
 			varying float vInstID;
 
-			vec2 roto( in vec2 p, in float theta )
+			// Quaternion rotation of a vector
+			vec3 qtransform(vec4 q, vec3 v)
 			{
-				return mat2(cos(theta), -sin(theta), sin(theta), cos(theta)) * p;
+				return v + 2.0*cross(cross(v, q.xyz) + q.w*v, q.xyz);
 			}
 
 			void main()
 			{
 				float rad = offset.w;
-				vec3 pos = position * .05 * rad;
+				vec3 pos = qtransform(rot, position) * .05 * rad;
 				vUv = texcoord;
 				vInstID = float(id);
 				pos += offset.xyz;
@@ -73,18 +74,8 @@
 
 			#define PI 3.1415926535897932384
 
-			vec2 polar2cart( vec2 rt )
-			{
-				float theta = 2. * PI * rt.y;
-				return rt.x * vec2(cos(theta), sin(theta));
-			}
-
 			void main()
 			{
-				//vec3 col = vec3(vUv, vInstID/numInstances);
-				vec2 c = polar2cart(vUv.yx);
-				float wave = sin(.2*(10.*c.x + vInstID + 10.*time));
-				vec3 col = mix(vec3(1.,0.,0.), vec3(0.,0.,1.), wave);
 				gl_FragColor = vec4( vUv, 1.);
 			}
 		</script>
@@ -283,7 +274,7 @@
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				instancedgeom.addAttribute( 'offset', offsets );
 
-				rots = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 1 ), 1, 1 );
+				rots = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				instancedgeom.addAttribute( 'rot', rots );
 
 				var idArray = new Float32Array( maxInstances );
@@ -379,9 +370,13 @@
 					return;
 
 				var p = controller.position;
+				var q = controller.quaternion;
 
 				offsets.setXYZW( liveInstances, p.x, p.y, p.z, instanceSize );
 				offsets.needsUpdate = true;
+
+				rots.setXYZW( liveInstances, q.x, q.y, q.z, q.w );
+				rots.needsUpdate = true;
 
 				liveInstances++;
 				instancedgeom.maxInstancedCount = liveInstances;
