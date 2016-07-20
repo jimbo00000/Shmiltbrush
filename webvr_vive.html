@@ -162,7 +162,7 @@
 				instancedgeom = new THREE.InstancedBufferGeometry();
 				instancedgeom.maxInstancedCount = liveInstances;
 
-				var vertices = new Float32Array( [
+				var unitCubeVertices = new Float32Array( [
 					-1,-1,-1,
 					 1,-1,-1,
 					 1, 1,-1,
@@ -205,9 +205,9 @@
 					-1, 1, 1,
 					-1, 1,-1,
 				] );
-				instancedgeom.addAttribute( 'position', new THREE.BufferAttribute( vertices, 3 ) );
+				instancedgeom.addAttribute( 'position', new THREE.BufferAttribute( unitCubeVertices, 3 ) );
 
-				var texcoords = new Float32Array( [
+				var unitCubeTexcoords = new Float32Array( [
 					0,0,1,
 					1,0,1,
 					1,1,1,
@@ -250,7 +250,7 @@
 					0,1,1,
 					0,1,0,
 				] );
-				instancedgeom.addAttribute( 'texcoord', new THREE.BufferAttribute( texcoords, 3 ) );
+				instancedgeom.addAttribute( 'texcoord', new THREE.BufferAttribute( unitCubeTexcoords, 3 ) );
 
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				instancedgeom.addAttribute( 'offset', offsets );
