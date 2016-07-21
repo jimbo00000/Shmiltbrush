@@ -15,6 +15,7 @@
 	<body>
 
 		<script src="three.js-master/build/three.js"></script>
+		<script src="js/exporters/InstancedGeometryExporter.js"></script>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			precision highp float;
@@ -102,7 +103,7 @@
 				geometry.maxInstancedCount = liveInstances;
 				var verts = [];
 				var texs = [];
-				var s = 16*2;
+				var s = 4;
 				for (var i=0; i<s; ++i) {
 					verts.push(0.0, 0.0);
 					var m = i/s;
@@ -178,6 +179,7 @@
 				window.addEventListener( 'touchstart', onTouchStart, false );
 				window.addEventListener( 'touchend', onTouchEnd, false );
 				window.addEventListener( 'touchmove', onTouchMove, false );
+				window.addEventListener( 'keydown', onKeyDown, false );
 			}
 
 			function onWindowResize() {
@@ -329,6 +331,16 @@
 					DoPaint(x, y, true);
 				}
 
+			}
+
+			function onKeyDown(ev) {
+				if (ev.key === 's') {
+					var exporter = new THREE.InstancedGeometryExporter();
+					console.log(geometry);
+					var geometryJson = JSON.stringify(exporter.parse(geometry));
+					console.log(geometryJson);
+
+				}
 			}
 
 			function animate() {
