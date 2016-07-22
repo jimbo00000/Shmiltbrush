@@ -337,7 +337,7 @@
 
 				if (ev.key === 's') {
 					var exporter = new THREE.InstancedGeometryExporter();
-					console.log(geometry);
+					//console.log(geometry);
 					var geometryJson = JSON.stringify(exporter.parse(geometry));
 					download(geometryJson, "instancedGeometry.json", "octet/stream");
 

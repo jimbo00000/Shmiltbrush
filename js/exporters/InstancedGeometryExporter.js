@@ -18,15 +18,16 @@ THREE.InstancedGeometryExporter.prototype = {
 			}
 		};
 
+		console.log(geometry);
+
 		var cnt = geometry.maxInstancedCount;
-		console.log(cnt, " instances");
+		output[ 'maxInstancedCount' ] = cnt;
 
 		{
 			var attribute = 'offset';
 			
 			var typedArray = geometry.attributes[ attribute ];
 			var array = [];
-			console.log(typedArray);
 
 			for ( var i = 0, l = cnt*4; i < l; i ++ ) {
 
@@ -41,6 +42,17 @@ THREE.InstancedGeometryExporter.prototype = {
 		{
 			var attribute = 'rot'; // one component
 			
+			var typedArray = geometry.attributes[ attribute ];
+			var array = [];
+
+			for ( var i = 0, l = cnt; i < l; i ++ ) {
+
+				array[ i ] = typedArray.array[ i ];
+
+			}
+
+			output[ attribute ] = array;
+
 		}
 
 		return output;
