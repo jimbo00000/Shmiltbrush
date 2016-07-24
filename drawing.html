@@ -180,6 +180,8 @@
 				window.addEventListener( 'touchend', onTouchEnd, false );
 				window.addEventListener( 'touchmove', onTouchMove, false );
 				window.addEventListener( 'keydown', onKeyDown, false );
+				window.addEventListener( 'dragover', handleDragOver, false );
+				window.addEventListener( 'drop', onDrop, false );
 			}
 
 			function onWindowResize() {
@@ -346,6 +348,29 @@
 				}
 			}
 
+			// Thanks to http://www.html5rocks.com/en/tutorials/file/dndfiles/
+			function handleDragOver(ev) {
+
+				ev.stopPropagation();
+				ev.preventDefault();
+
+			}
+
+			function onDrop(ev) {
+
+				ev.stopPropagation();
+				ev.preventDefault();
+
+				var files = ev.dataTransfer.files;
+				if (files.length == 0)
+					return;
+
+				var f = files[0];
+				console.log(f);
+				loadGeometryFromJson(f.name);
+
+			}
+
 			function download(text, name, type) {
 
 				var a = document.createElement("a");
@@ -356,11 +381,12 @@
 
 			}
 
-			function loadJSON(callback) {   
+			function loadJSON(jsonfile, callback) {
 
+				// This will only work if the dragged file is in the current directory
 				var xobj = new XMLHttpRequest();
 				xobj.overrideMimeType("application/json");
-				xobj.open('GET', 'instancedGeometry.json', true);
+				xobj.open('GET', jsonfile, true);
 				xobj.onreadystatechange = function () {
 					console.log("state change", xobj);
 					if (xobj.readyState == 4 && xobj.status == "0") { // status 0?
@@ -370,9 +396,9 @@
 				xobj.send(null);  
 			}
 
-			function loadGeometryFromJson() {
+			function loadGeometryFromJson(jsonfile) {
 
-				loadJSON(function(response) {
+				loadJSON(jsonfile, function(response) {
 					var actual_JSON = JSON.parse(response);
 					console.log("JSON Loaded:", actual_JSON);
 
