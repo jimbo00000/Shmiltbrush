@@ -20,7 +20,8 @@
 	</head>
 	<body>
 
-		<script src="three.js-master/build/three.js"></script>
+		<script src="three.js-master/build/three.min.js"></script>
+		<script src="js/exporters/InstancedGeometryExporter.js"></script>
 
 		<script src="js/WebVR.js"></script>
 		<script src="js/effects/VREffect.js"></script>
@@ -362,6 +363,9 @@
 				//
 
 				window.addEventListener( 'resize', onWindowResize, false );
+				window.addEventListener( 'keydown', onKeyDown, false );
+				window.addEventListener( 'dragover', handleDragOver, false );
+				window.addEventListener( 'drop', onDrop, false );
 
 			}
 
@@ -398,6 +402,111 @@
 				effect.setSize( window.innerWidth, window.innerHeight );
 
 			}
+
+
+			function onKeyDown(ev) {
+				console.log(ev);
+
+				if (ev.key === 's') {
+					var exporter = new THREE.InstancedGeometryExporter();
+					var geometryJson = JSON.stringify(exporter.parse(instancedgeom));
+					download(geometryJson, "instancedGeometry3d.json", "octet/stream");
+
+				}
+				else if (ev.key === 'o') {
+					loadGeometryFromJson();
+				}
+			}
+
+			// Thanks to http://www.html5rocks.com/en/tutorials/file/dndfiles/
+			function handleDragOver(ev) {
+
+				ev.stopPropagation();
+				ev.preventDefault();
+
+			}
+
+			function onDrop(ev) {
+
+				ev.stopPropagation();
+				ev.preventDefault();
+
+				var files = ev.dataTransfer.files;
+				if (files.length == 0)
+					return;
+
+				var f = files[0];
+				console.log(f);
+				loadGeometryFromJson(f.name);
+
+			}
+
+			function download(text, name, type) {
+
+				var a = document.createElement("a");
+				var file = new Blob([text], {type: type});
+				a.href = URL.createObjectURL(file);
+				a.download = name;
+				a.click();
+
+			}
+
+			function loadJSON(jsonfile, callback) {
+
+				// This will only work if the dragged file is in the current directory
+				var xobj = new XMLHttpRequest();
+				xobj.overrideMimeType("application/json");
+				xobj.open('GET', jsonfile, true);
+				xobj.onreadystatechange = function () {
+					console.log("state change", xobj);
+					if (xobj.readyState == 4 && xobj.status == "0") { // status 0?
+						callback(xobj.responseText);
+					}
+				};
+				xobj.send(null);  
+			}
+
+			function loadGeometryFromJson(jsonfile) {
+
+				loadJSON(jsonfile, function(response) {
+					var actual_JSON = JSON.parse(response);
+					console.log("JSON Loaded:", actual_JSON);
+
+					// Apply geometry
+					// TODO: importer
+					var cnt = actual_JSON.maxInstancedCount;
+					instancedgeom.maxInstancedCount = cnt;
+					liveInstances = cnt;
+
+					var off = actual_JSON.offset;
+					for ( var i = 0, l = cnt; i < l; i ++ ) {
+
+						offsets.setXYZW( i,
+							off[ 4*i + 0 ], 
+							off[ 4*i + 1 ], 
+							off[ 4*i + 2 ], 
+							off[ 4*i + 3 ] );
+
+					}
+					offsets.needsUpdate = true;
+
+					var r = actual_JSON.rot;
+					for ( var i = 0, l = cnt; i < l; i ++ ) {
+
+						rots.setXYZW( i,
+							r[ 4*i + 0 ], 
+							r[ 4*i + 1 ], 
+							r[ 4*i + 2 ], 
+							r[ 4*i + 3 ] );
+
+					}
+					rots.needsUpdate = true;
+
+				});
+
+			}
+
+
 
 			//
 

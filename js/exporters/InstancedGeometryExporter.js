@@ -40,12 +40,12 @@ THREE.InstancedGeometryExporter.prototype = {
 		}
 
 		{
-			var attribute = 'rot'; // one component
+			var attribute = 'rot';
 			
 			var typedArray = geometry.attributes[ attribute ];
 			var array = [];
-
-			for ( var i = 0, l = cnt; i < l; i ++ ) {
+			//for ( var i = 0, l = cnt; i < l; i ++ ) {
+			for ( var i = 0, l = cnt*4; i < l; i ++ ) {
 
 				array[ i ] = typedArray.array[ i ];
 
