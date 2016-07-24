@@ -1,6 +1,6 @@
 # Shmiltbrush
 
-Shmiltbrush is a clone of some Vive app on Steam, I forget the name. It uses the Vive's controllers to paint using geometry instances.
+Shmiltbrush is a clone of some Vive app on Steam, I forget the name. It uses the Vive's controllers to paint using geometry instances in Three.js.
 
 ## How to run it
 
