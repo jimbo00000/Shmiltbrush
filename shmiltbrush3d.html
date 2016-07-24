@@ -127,6 +127,7 @@
 			var effect, controls;
 			var controller1, controller2;
 			var cursorgeom, instancedgeom, instancedmesh;
+			var paletteMesh;
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
@@ -343,13 +344,27 @@
 
 				controller1.add(cursorgeom);
 
+				// Palette - circular hue browser
+				var paletteGeom = new THREE.CircleGeometry( .5, 32 );
+				var paletteMaterial = new THREE.RawShaderMaterial( {
+					vertexShader: document.getElementById( 'cursorVertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'cursorFragmentShader' ).textContent,
+				} );
+				paletteMesh = new THREE.Mesh( paletteGeom, paletteMaterial );
 
-				//console.log(controller1);
-				//console.log(controller1.standingMatrix);
-				console.log(instancedmesh);
+				// Approximately line up the palette on the touchpad
+				var m1 = new THREE.Matrix4();
+				var m2 = new THREE.Matrix4();
+				m1.makeRotationX( -Math.PI/2 + .11 );
+				m2.makeTranslation( 0, -.05, 0.012 );
+				m1.multiply(m2);
+				paletteMesh.applyMatrix(m1);
+
+				controller2.add(paletteMesh);
+
+
 				instancedmesh.matrix = controller1.standingMatrix;
 				instancedmesh.matrixAutoUpdate = false;
-				console.log(instancedmesh);
 
 
 				effect = new THREE.VREffect( renderer );
