@@ -329,7 +329,9 @@
 				loader.setPath( 'models/obj/vive-controller/' );
 				loader.load( 'vr_controller_vive_1_5.obj', function ( object ) {
 
-					controller1.add( object.clone() );
+					var c1 = object.clone();
+					c1.visible = false;
+					controller1.add( c1 );
 					controller2.add( object.clone() );
 
 				} );
