@@ -130,7 +130,7 @@
 			var camera, scene, renderer;
 			var effect, controls;
 			var controller1, controller2;
-			var brushMesh, paletteMesh;
+			var brushMesh, paletteMesh, paletteTouchMesh;
 			var instancedGeometry, instancedMesh;
 
 			var liveInstances = 0;
@@ -368,7 +368,22 @@
 				m1.multiply(m2);
 				paletteMesh.applyMatrix(m1);
 
-				controller2.add(paletteMesh);
+				controller2.add( paletteMesh );
+
+
+				var paletteTouchGeometry = new THREE.SphereGeometry( .005, 32, 32 );
+				paletteTouchMesh = new THREE.Mesh( paletteTouchGeometry, 
+					new THREE.MeshLambertMaterial( {
+						color: 0xff0000,
+						//wireframe: true
+						} )
+					 );
+
+				paletteTouchMesh.matrix.setPosition(new THREE.Vector3(.1, .05, 0));
+				paletteTouchMesh.matrixAutoUpdate = false;
+
+				paletteMesh.add( paletteTouchMesh );
+				//console.log(paletteTouchMesh);
 
 
 				instancedMesh.matrix = controller1.standingMatrix;
@@ -597,6 +612,15 @@
 							if (a.length() > 0) {
 								//console.log(dpad,a);
 								paletteTouchXY = a.clone();
+
+								// Move the touch indicator
+								var pos3 = new THREE.Vector3(.01, .005, 0);
+								var m1 = new THREE.Matrix4();
+								var a = .05;
+								m1.makeTranslation( a * ax[0], a * ax[1], 0 );
+								paletteTouchMesh.matrix = m1;
+								paletteTouchMesh.matrixAutoUpdate = false;
+
 
 								// Calculate HSV color
 								var a = paletteTouchXY;
