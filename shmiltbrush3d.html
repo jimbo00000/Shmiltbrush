@@ -177,15 +177,6 @@
 				light.position.set( 1, 1, 1 ).normalize();
 				scene.add( light );
 
-				var ipd = .064
-				var geometry = new THREE.BoxGeometry( ipd, ipd, ipd );
-
-				var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0xff0000 } ) );
-				object.position.x = .7;
-				object.position.y = -2;
-				object.position.z = 0;
-				room.add( object );
-
 
 				instancedGeometry = new THREE.InstancedBufferGeometry();
 				instancedGeometry.maxInstancedCount = liveInstances;
@@ -346,13 +337,18 @@
 				} );
 
 				// Simple color cube shader
-				var cubesz = 1.;
+				var cubesz = .1;
 				var brushGeometry = new THREE.BoxGeometry( cubesz, cubesz, cubesz );
 				var brushMaterial = new THREE.RawShaderMaterial( {
 					vertexShader: document.getElementById( 'cursorVertexShader' ).textContent,
 					fragmentShader: document.getElementById( 'cursorFragmentShader' ).textContent,
 				} );
-				brushMesh = new THREE.Mesh( brushGeometry, brushMaterial );
+				brushMesh = new THREE.Mesh( brushGeometry, 
+					new THREE.MeshBasicMaterial( {
+						color: 0xff0000,
+						//wireframe: true
+						} )
+					 );
 
 				controller1.add(brushMesh);
 
@@ -612,6 +608,7 @@
 								paletteColor.setHSL( hue, 1, rad );
 								//console.log(paletteColor);
 
+								brushMesh.material.color = paletteColor;
 							}
 						}
 					}
