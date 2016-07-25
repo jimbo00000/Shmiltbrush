@@ -625,7 +625,7 @@
 								// Calculate HSV color
 								var a = paletteTouchXY;
 								var rad = a.length();
-								var phi = Math.atan2(a.y, a.x);
+								var phi = Math.atan2(-a.y, -a.x);
 								var hue = (Math.PI + phi) / (2.*Math.PI);
 								//console.log(phi, rad, hue);
 
@@ -633,6 +633,7 @@
 								//console.log(paletteColor);
 
 								brushMesh.material.color = paletteColor;
+								paletteTouchMesh.material.color = paletteColor;
 							}
 						}
 					}
