@@ -131,7 +131,7 @@
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
-			var offsets, rots;
+			var perInstancePositions, perInstanceOrientations;
 			var instanceSize = 1;
 			var painting = false;
 
@@ -274,11 +274,11 @@
 				] );
 				instancedGeometry.addAttribute( 'texcoord', new THREE.BufferAttribute( unitCubeTexcoords, 3 ) );
 
-				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
-				instancedGeometry.addAttribute( 'offset', offsets );
+				perInstancePositions = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
+				instancedGeometry.addAttribute( 'offset', perInstancePositions );
 
-				rots = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
-				instancedGeometry.addAttribute( 'rot', rots );
+				perInstanceOrientations = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
+				instancedGeometry.addAttribute( 'rot', perInstanceOrientations );
 
 				var idArray = new Float32Array( maxInstances );
 				for ( var i = 0; i < maxInstances; i ++ ) {
@@ -396,11 +396,11 @@
 				var q = controller.quaternion;
 				q.inverse();
 
-				offsets.setXYZW( liveInstances, p.x, p.y, p.z, instanceSize );
-				offsets.needsUpdate = true;
+				perInstancePositions.setXYZW( liveInstances, p.x, p.y, p.z, instanceSize );
+				perInstancePositions.needsUpdate = true;
 
-				rots.setXYZW( liveInstances, q.x, q.y, q.z, q.w );
-				rots.needsUpdate = true;
+				perInstanceOrientations.setXYZW( liveInstances, q.x, q.y, q.z, q.w );
+				perInstanceOrientations.needsUpdate = true;
 
 				liveInstances++;
 				instancedGeometry.maxInstancedCount = liveInstances;
@@ -501,26 +501,26 @@
 					var off = actual_JSON.offset;
 					for ( var i = 0, l = cnt; i < l; i ++ ) {
 
-						offsets.setXYZW( i,
+						perInstancePositions.setXYZW( i,
 							off[ 4*i + 0 ], 
 							off[ 4*i + 1 ], 
 							off[ 4*i + 2 ], 
 							off[ 4*i + 3 ] );
 
 					}
-					offsets.needsUpdate = true;
+					perInstancePositions.needsUpdate = true;
 
 					var r = actual_JSON.rot;
 					for ( var i = 0, l = cnt; i < l; i ++ ) {
 
-						rots.setXYZW( i,
+						perInstanceOrientations.setXYZW( i,
 							r[ 4*i + 0 ], 
 							r[ 4*i + 1 ], 
 							r[ 4*i + 2 ], 
 							r[ 4*i + 3 ] );
 
 					}
-					rots.needsUpdate = true;
+					perInstanceOrientations.needsUpdate = true;
 
 				});
 
