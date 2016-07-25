@@ -21,7 +21,7 @@
 	<body>
 
 		<script src="three.js-master/build/three.min.js"></script>
-		<script src="js/exporters/InstancedGeometryExporter.js"></script>
+		<script src="js/exporters/instancedGeometryExporter.js"></script>
 
 		<script src="js/WebVR.js"></script>
 		<script src="js/effects/VREffect.js"></script>
@@ -126,8 +126,8 @@
 			var camera, scene, renderer;
 			var effect, controls;
 			var controller1, controller2;
-			var brushMesh, instancedgeom, instancedmesh;
-			var paletteMesh;
+			var brushMesh, paletteMesh;
+			var instancedGeometry, instancedmesh;
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
@@ -181,8 +181,8 @@
 				room.add( object );
 
 
-				instancedgeom = new THREE.InstancedBufferGeometry();
-				instancedgeom.maxInstancedCount = liveInstances;
+				instancedGeometry = new THREE.InstancedBufferGeometry();
+				instancedGeometry.maxInstancedCount = liveInstances;
 
 				var unitCubeVertices = new Float32Array( [
 					-1,-1,-1,
@@ -227,7 +227,7 @@
 					-1, 1, 1,
 					-1, 1,-1,
 				] );
-				instancedgeom.addAttribute( 'position', new THREE.BufferAttribute( unitCubeVertices, 3 ) );
+				instancedGeometry.addAttribute( 'position', new THREE.BufferAttribute( unitCubeVertices, 3 ) );
 
 				var unitCubeTexcoords = new Float32Array( [
 					0,0,1,
@@ -272,19 +272,19 @@
 					0,1,1,
 					0,1,0,
 				] );
-				instancedgeom.addAttribute( 'texcoord', new THREE.BufferAttribute( unitCubeTexcoords, 3 ) );
+				instancedGeometry.addAttribute( 'texcoord', new THREE.BufferAttribute( unitCubeTexcoords, 3 ) );
 
 				offsets = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
-				instancedgeom.addAttribute( 'offset', offsets );
+				instancedGeometry.addAttribute( 'offset', offsets );
 
 				rots = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
-				instancedgeom.addAttribute( 'rot', rots );
+				instancedGeometry.addAttribute( 'rot', rots );
 
 				var idArray = new Float32Array( maxInstances );
 				for ( var i = 0; i < maxInstances; i ++ ) {
 					idArray[ i ] = i;
 				}
-				instancedgeom.addAttribute( 'id', new THREE.InstancedBufferAttribute( idArray, 1, 1 ) );
+				instancedGeometry.addAttribute( 'id', new THREE.InstancedBufferAttribute( idArray, 1, 1 ) );
 
 				var imat = new THREE.RawShaderMaterial( {
 					uniforms: {
@@ -297,7 +297,7 @@
 				} );
 
 
-				instancedmesh = new THREE.Mesh( instancedgeom, imat );
+				instancedmesh = new THREE.Mesh( instancedGeometry, imat );
 				scene.add( instancedmesh );
 
 
@@ -403,7 +403,7 @@
 				rots.needsUpdate = true;
 
 				liveInstances++;
-				instancedgeom.maxInstancedCount = liveInstances;
+				instancedGeometry.maxInstancedCount = liveInstances;
 
 			}
 
@@ -423,17 +423,19 @@
 
 
 			function onKeyDown(ev) {
+
 				console.log(ev);
 
 				if (ev.key === 's') {
 					var exporter = new THREE.InstancedGeometryExporter();
-					var geometryJson = JSON.stringify(exporter.parse(instancedgeom));
+					var geometryJson = JSON.stringify(exporter.parse(instancedGeometry));
 					download(geometryJson, "instancedGeometry3d.json", "octet/stream");
 
 				}
 				else if (ev.key === 'o') {
 					loadGeometryFromJson();
 				}
+
 			}
 
 			// Thanks to http://www.html5rocks.com/en/tutorials/file/dndfiles/
@@ -493,7 +495,7 @@
 					// Apply geometry
 					// TODO: importer
 					var cnt = actual_JSON.maxInstancedCount;
-					instancedgeom.maxInstancedCount = cnt;
+					instancedGeometry.maxInstancedCount = cnt;
 					liveInstances = cnt;
 
 					var off = actual_JSON.offset;
