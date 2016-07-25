@@ -40,11 +40,13 @@
 			attribute vec3 texcoord;
 			attribute float id;
 
-			attribute vec4 perInstPositions; // instanced
-			attribute vec4 perInstOrientations; // instanced
+			attribute vec4 perInstPositions;
+			attribute vec4 perInstOrientations;
+			attribute vec4 perInstColors;
 
 			varying vec3 vUv;
 			varying float vInstID;
+			varying vec3 vCol;
 
 			// Quaternion rotation of a vector
 			vec3 qtransform(vec4 q, vec3 v)
@@ -58,6 +60,7 @@
 				vec3 pos = qtransform(perInstOrientations, position) * .05 * rad;
 				//vUv = texcoord;
 				vUv = .5*position + vec3(.5);
+				vCol = perInstColors.rgb;
 				vInstID = float(id);
 				pos += perInstPositions.xyz;
 				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
@@ -73,12 +76,13 @@
 
 			varying vec3 vUv;
 			varying float vInstID;
+			varying vec3 vCol;
 
 			#define PI 3.1415926535897932384
 
 			void main()
 			{
-				gl_FragColor = vec4( vUv, 1.);
+				gl_FragColor = vec4( vCol, 1. );
 			}
 		</script>
 
@@ -131,9 +135,10 @@
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
-			var perInstancePositions, perInstanceOrientations;
+			var perInstancePositions, perInstanceOrientations, perInstanceColors;
 			var instanceSize = 1;
 			var paletteTouchXY = new THREE.Vector2( 0, 0 );
+			var paletteColor = new THREE.Color( 1, 0, 0 );
 			var painting = false;
 
 			var room;
@@ -281,6 +286,9 @@
 				perInstanceOrientations = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				instancedGeometry.addAttribute( 'perInstOrientations', perInstanceOrientations );
 
+				perInstanceColors = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
+				instancedGeometry.addAttribute( 'perInstColors', perInstanceColors );
+
 				var idArray = new Float32Array( maxInstances );
 				for ( var i = 0; i < maxInstances; i ++ ) {
 					idArray[ i ] = i;
@@ -388,7 +396,7 @@
 
 			}
 
-			function addInstance(controller) {
+			function addInstance(controller, color) {
 
 				if (liveInstances >= maxInstances)
 					return;
@@ -403,6 +411,10 @@
 				perInstanceOrientations.setXYZW( liveInstances, q.x, q.y, q.z, q.w );
 				perInstanceOrientations.needsUpdate = true;
 
+				var c = color;
+				perInstanceColors.setXYZW( liveInstances, c.r, c.g, c.b, 0 );
+				perInstanceColors.needsUpdate = true;
+
 				liveInstances++;
 				instancedGeometry.maxInstancedCount = liveInstances;
 
@@ -410,7 +422,7 @@
 
 			function DoPaint(controller) {
 
-				addInstance(controller);
+				addInstance(controller, paletteColor);
 			}
 
 			function onWindowResize() {
@@ -421,7 +433,6 @@
 				effect.setSize( window.innerWidth, window.innerHeight );
 
 			}
-
 
 			function onKeyDown(ev) {
 
@@ -523,6 +534,18 @@
 					}
 					perInstanceOrientations.needsUpdate = true;
 
+					var o = actual_JSON.perInstColors;
+					for ( var i = 0, l = cnt; i < l; i ++ ) {
+
+						perInstanceColors.setXYZW( i,
+							o[ 4*i + 0 ], 
+							o[ 4*i + 1 ], 
+							o[ 4*i + 2 ], 
+							o[ 4*i + 3 ] );
+
+					}
+					perInstanceColors.needsUpdate = true;
+
 				});
 
 			}
@@ -578,6 +601,17 @@
 							if (a.length() > 0) {
 								//console.log(dpad,a);
 								paletteTouchXY = a.clone();
+
+								// Calculate HSV color
+								var a = paletteTouchXY;
+								var rad = a.length();
+								var phi = Math.atan2(a.y, a.x);
+								var hue = (Math.PI + phi) / (2.*Math.PI);
+								//console.log(phi, rad, hue);
+
+								paletteColor.setHSL( hue, 1, rad );
+								//console.log(paletteColor);
+
 							}
 						}
 					}
