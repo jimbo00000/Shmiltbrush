@@ -530,26 +530,23 @@
 
 			//
 
-			function animate() {
+			function handleViveController() {
 
-				effect.requestAnimationFrame( animate );
-				render();
+				var brushController = controller1;
 
-				var cont = controller1;
-
-				if (cont.buttons) {
+				if (brushController.buttons) {
 					for (var i=0; i<4; ++i) {
 
-						var but = cont.buttons[i];
+						var but = brushController.buttons[i];
 						if (but.pressed) {
 							DoPaint(controller1);
 						}
 					}
 
-					var dpad = cont.buttons[0];
+					var dpad = brushController.buttons[0];
 					if (dpad.touched)
 					{
-						var ax = cont.axes;
+						var ax = brushController.axes;
 						//console.log(dpad, ax);
 						if (ax) {
 							var a = new THREE.Vector2( ax[0], ax[1] );
@@ -565,6 +562,14 @@
 						}
 					}
 				}
+
+			}
+
+			function animate() {
+
+				effect.requestAnimationFrame( animate );
+				render();
+				handleViveController();
 
 			}
 
