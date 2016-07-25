@@ -126,7 +126,7 @@
 			var camera, scene, renderer;
 			var effect, controls;
 			var controller1, controller2;
-			var cursorgeom, instancedgeom, instancedmesh;
+			var brushMesh, instancedgeom, instancedmesh;
 			var paletteMesh;
 
 			var liveInstances = 0;
@@ -340,9 +340,9 @@
 					vertexShader: document.getElementById( 'cursorVertexShader' ).textContent,
 					fragmentShader: document.getElementById( 'cursorFragmentShader' ).textContent,
 				} );
-				cursorgeom = new THREE.Mesh( geom3, cursorMaterial );
+				brushMesh = new THREE.Mesh( geom3, cursorMaterial );
 
-				controller1.add(cursorgeom);
+				controller1.add(brushMesh);
 
 				// Palette - circular hue browser
 				var paletteGeom = new THREE.CircleGeometry( .5, 32 );
@@ -552,10 +552,10 @@
 								//console.log(dpad,a);
 								var sz = .5 + .5 * a.y;
 								instanceSize = sz;
-								cursorgeom.scale.x = sz;
-								cursorgeom.scale.y = sz;
-								cursorgeom.scale.z = sz;
-								cursorgeom.needsUpdate = true
+								brushMesh.scale.x = sz;
+								brushMesh.scale.y = sz;
+								brushMesh.scale.z = sz;
+								brushMesh.needsUpdate = true
 							}
 						}
 					}
