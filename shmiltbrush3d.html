@@ -334,13 +334,14 @@
 
 				} );
 
+				// Simple color cube shader
 				var cubesz = 1.;
-				var geom3 = new THREE.BoxGeometry( cubesz, cubesz, cubesz );
-				var cursorMaterial = new THREE.RawShaderMaterial( {
+				var brushGeometry = new THREE.BoxGeometry( cubesz, cubesz, cubesz );
+				var brushMaterial = new THREE.RawShaderMaterial( {
 					vertexShader: document.getElementById( 'cursorVertexShader' ).textContent,
 					fragmentShader: document.getElementById( 'cursorFragmentShader' ).textContent,
 				} );
-				brushMesh = new THREE.Mesh( geom3, cursorMaterial );
+				brushMesh = new THREE.Mesh( brushGeometry, brushMaterial );
 
 				controller1.add(brushMesh);
 
