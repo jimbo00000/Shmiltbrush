@@ -127,7 +127,7 @@
 			var effect, controls;
 			var controller1, controller2;
 			var brushMesh, paletteMesh;
-			var instancedGeometry, instancedmesh;
+			var instancedGeometry, instancedMesh;
 
 			var liveInstances = 0;
 			var maxInstances = 32768;
@@ -297,8 +297,8 @@
 				} );
 
 
-				instancedmesh = new THREE.Mesh( instancedGeometry, imat );
-				scene.add( instancedmesh );
+				instancedMesh = new THREE.Mesh( instancedGeometry, imat );
+				scene.add( instancedMesh );
 
 
 
@@ -366,8 +366,8 @@
 				controller2.add(paletteMesh);
 
 
-				instancedmesh.matrix = controller1.standingMatrix;
-				instancedmesh.matrixAutoUpdate = false;
+				instancedMesh.matrix = controller1.standingMatrix;
+				instancedMesh.matrixAutoUpdate = false;
 
 
 				effect = new THREE.VREffect( renderer );
