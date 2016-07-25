@@ -20,11 +20,14 @@ THREE.InstancedGeometryExporter.prototype = {
 
 		console.log(geometry);
 
+		//output['fileFormatType'] = '3D instanced geomtry';
+		//output['fileFormatVersion'] = 0.1;
+
 		var cnt = geometry.maxInstancedCount;
 		output[ 'maxInstancedCount' ] = cnt;
 
 		{
-			var attribute = 'offset';
+			var attribute = 'perInstPositions';
 			
 			var typedArray = geometry.attributes[ attribute ];
 			var array = [];
@@ -40,7 +43,7 @@ THREE.InstancedGeometryExporter.prototype = {
 		}
 
 		{
-			var attribute = 'rot';
+			var attribute = 'perInstOrientations';
 			
 			var typedArray = geometry.attributes[ attribute ];
 			var array = [];

@@ -498,26 +498,26 @@
 					instancedGeometry.maxInstancedCount = cnt;
 					liveInstances = cnt;
 
-					var off = actual_JSON.offset;
+					var p = actual_JSON.perInstPositions;
 					for ( var i = 0, l = cnt; i < l; i ++ ) {
 
 						perInstancePositions.setXYZW( i,
-							off[ 4*i + 0 ], 
-							off[ 4*i + 1 ], 
-							off[ 4*i + 2 ], 
-							off[ 4*i + 3 ] );
+							p[ 4*i + 0 ], 
+							p[ 4*i + 1 ], 
+							p[ 4*i + 2 ], 
+							p[ 4*i + 3 ] );
 
 					}
 					perInstancePositions.needsUpdate = true;
 
-					var r = actual_JSON.rot;
+					var o = actual_JSON.perInstOrientations;
 					for ( var i = 0, l = cnt; i < l; i ++ ) {
 
 						perInstanceOrientations.setXYZW( i,
-							r[ 4*i + 0 ], 
-							r[ 4*i + 1 ], 
-							r[ 4*i + 2 ], 
-							r[ 4*i + 3 ] );
+							o[ 4*i + 0 ], 
+							o[ 4*i + 1 ], 
+							o[ 4*i + 2 ], 
+							o[ 4*i + 3 ] );
 
 					}
 					perInstanceOrientations.needsUpdate = true;
