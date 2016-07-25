@@ -12,7 +12,7 @@ THREE.InstancedGeometryExporter.prototype = {
 
 		var output = {
 			metadata: {
-				version: 4.1,
+				version: 4.2,
 				type: 'InstancedGeometry3D',
 				generator: 'InstancedGeometryExporter'
 			}
@@ -44,7 +44,21 @@ THREE.InstancedGeometryExporter.prototype = {
 			
 			var typedArray = geometry.attributes[ attribute ];
 			var array = [];
-			//for ( var i = 0, l = cnt; i < l; i ++ ) {
+			for ( var i = 0, l = cnt*4; i < l; i ++ ) {
+
+				array[ i ] = typedArray.array[ i ];
+
+			}
+
+			output[ attribute ] = array;
+
+		}
+
+		{
+			var attribute = 'perInstColors';
+			
+			var typedArray = geometry.attributes[ attribute ];
+			var array = [];
 			for ( var i = 0, l = cnt*4; i < l; i ++ ) {
 
 				array[ i ] = typedArray.array[ i ];
