@@ -12,16 +12,13 @@ THREE.InstancedGeometryExporter.prototype = {
 
 		var output = {
 			metadata: {
-				version: 4.0,
-				type: 'InstancedGeometry',
+				version: 4.1,
+				type: 'InstancedGeometry3D',
 				generator: 'InstancedGeometryExporter'
 			}
 		};
 
 		console.log(geometry);
-
-		//output['fileFormatType'] = '3D instanced geomtry';
-		//output['fileFormatVersion'] = 0.1;
 
 		var cnt = geometry.maxInstancedCount;
 		output[ 'maxInstancedCount' ] = cnt;
