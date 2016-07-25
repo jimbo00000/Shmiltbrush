@@ -133,6 +133,7 @@
 			var maxInstances = 32768;
 			var perInstancePositions, perInstanceOrientations;
 			var instanceSize = 1;
+			var paletteTouchXY = new THREE.Vector2( 0, 0 );
 			var painting = false;
 
 			var room;
@@ -563,6 +564,24 @@
 					}
 				}
 
+				var paletteController = controller2;
+
+				if (paletteController.buttons) {
+
+					var dpad = paletteController.buttons[0];
+					if (dpad.touched)
+					{
+						var ax = paletteController.axes;
+						//console.log(dpad, ax);
+						if (ax) {
+							var a = new THREE.Vector2( ax[0], ax[1] );
+							if (a.length() > 0) {
+								//console.log(dpad,a);
+								paletteTouchXY = a.clone();
+							}
+						}
+					}
+				}
 			}
 
 			function animate() {
