@@ -15,7 +15,7 @@
 	<body>
 
 		<script src="three.js-master/build/three.min.js"></script>
-		<script src="js/exporters/InstancedGeometryExporter.js"></script>
+		<script src="js/exporters/InstancedGeometry2DExporter.js"></script>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			precision highp float;
@@ -338,13 +338,10 @@
 			function onKeyDown(ev) {
 
 				if (ev.key === 's') {
-					var exporter = new THREE.InstancedGeometryExporter();
-					var geometryJson = JSON.stringify(exporter.parse(geometry));
-					download(geometryJson, "instancedGeometry.json", "octet/stream");
+					var exporter = new THREE.InstancedGeometry2DExporter();
+					var geometryJson = JSON.stringify( exporter.parse(geometry) );
+					download( geometryJson, "instancedGeometry2D.json", "octet/stream" );
 
-				}
-				else if (ev.key === 'o') {
-					loadGeometryFromJson();
 				}
 			}
 
@@ -362,19 +359,18 @@
 				ev.preventDefault();
 
 				var files = ev.dataTransfer.files;
-				if (files.length == 0)
+				if ( files.length == 0 )
 					return;
 
 				var f = files[0];
-				console.log(f);
-				loadGeometryFromJson(f.name);
+				loadGeometryFromJson( f.name );
 
 			}
 
 			function download(text, name, type) {
 
 				var a = document.createElement("a");
-				var file = new Blob([text], {type: type});
+				var file = new Blob( [text], {type: type} );
 				a.href = URL.createObjectURL(file);
 				a.download = name;
 				a.click();
