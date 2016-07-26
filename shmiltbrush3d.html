@@ -34,10 +34,12 @@
 			precision highp float;
 
 			uniform mat4 modelViewMatrix;
+			uniform mat3 normalMatrix;
 			uniform mat4 projectionMatrix;
 
 			attribute vec3 position;
 			attribute vec3 texcoord;
+			attribute vec3 normal;
 			attribute float id;
 
 			attribute vec4 perInstPositions;
@@ -60,7 +62,7 @@
 				vec3 pos = qtransform(perInstOrientations, position) * .05 * rad;
 				//vUv = texcoord;
 				vUv = .5*position + vec3(.5);
-				vCol = perInstColors.rgb;
+				vCol = normalMatrix * normal;//perInstColors.rgb;
 				vInstID = float(id);
 				pos += perInstPositions.xyz;
 				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
@@ -270,6 +272,51 @@
 					0,1,0,
 				] );
 				instancedGeometry.addAttribute( 'texcoord', new THREE.BufferAttribute( unitCubeTexcoords, 3 ) );
+
+				var unitCubeNormals = new Float32Array( [
+					0,0,-1,
+					0,0,-1,
+					0,0,-1,
+					0,0,-1,
+					0,0,-1,
+					0,0,-1,
+
+					0,0,1,
+					0,0,1,
+					0,0,1,
+					0,0,1,
+					0,0,1,
+					0,0,1,
+
+					1,0,0,
+					1,0,0,
+					1,0,0,
+					1,0,0,
+					1,0,0,
+					1,0,0,
+					
+					-1,0,0,
+					-1,0,0,
+					-1,0,0,
+					-1,0,0,
+					-1,0,0,
+					-1,0,0,
+					
+					0,-1,0,
+					0,-1,0,
+					0,-1,0,
+					0,-1,0,
+					0,-1,0,
+					0,-1,0,
+
+					0,1,0,
+					0,1,0,
+					0,1,0,
+					0,1,0,
+					0,1,0,
+					0,1,0,
+				] );
+				instancedGeometry.addAttribute( 'normal', new THREE.BufferAttribute( unitCubeNormals, 3 ) );
 
 				perInstancePositions = new THREE.InstancedBufferAttribute( new Float32Array( maxInstances * 4 ), 4, 1 );
 				instancedGeometry.addAttribute( 'perInstPositions', perInstancePositions );
