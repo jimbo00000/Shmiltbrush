@@ -33,13 +33,13 @@
 		<script id="instanceVertexShader" type="x-shader/x-vertex">
 			precision highp float;
 
-			uniform mat4 modelViewMatrix;
-			uniform mat3 normalMatrix;
-			uniform mat4 projectionMatrix;
+			//uniform mat4 modelViewMatrix;
+			//uniform mat3 normalMatrix;
+			//uniform mat4 projectionMatrix;
 
-			attribute vec3 position;
+			//attribute vec3 position;
 			attribute vec3 texcoord;
-			attribute vec3 normal;
+			//attribute vec3 normal;
 			attribute float id;
 
 			attribute vec4 perInstPositions;
@@ -49,6 +49,8 @@
 			varying vec3 vUv;
 			varying float vInstID;
 			varying vec3 vCol;
+			varying vec3 vPos;
+			varying vec3 vNormal;
 
 			// Quaternion rotation of a vector
 			vec3 qtransform(vec4 q, vec3 v)
@@ -62,11 +64,13 @@
 				vec3 pos = qtransform(perInstOrientations, position) * .05 * rad;
 				//vUv = texcoord;
 				vUv = .5*position + vec3(.5);
-				vCol = normalMatrix * normal;//perInstColors.rgb;
+				vCol = perInstColors.rgb;
+				vNormal = normalMatrix * normal;
 				vInstID = float(id);
 				pos += perInstPositions.xyz;
-				vec4 mvPosition = modelViewMatrix * vec4( pos, 1.0 );
-				gl_Position = projectionMatrix * mvPosition;
+				vec4 mvPos = modelViewMatrix * vec4( pos, 1.0 );
+				vPos = mvPos.xyz;
+				gl_Position = projectionMatrix * mvPos;
 			}
 		</script>
 
@@ -79,12 +83,30 @@
 			varying vec3 vUv;
 			varying float vInstID;
 			varying vec3 vCol;
+			varying vec3 vPos;
+			varying vec3 vNormal;
 
-			#define PI 3.1415926535897932384
+			struct PointLight {
+				vec3 position;
+				vec3 color;
+			};
+			uniform PointLight pointLights[ NUM_POINT_LIGHTS ];
+			uniform float pointLightDistance[ NUM_POINT_LIGHTS ];
+
+			// Thank you: https://csantosbh.wordpress.com/2014/01/09/custom-shaders-with-three-js-uniforms-textures-and-lighting/
+			// http://stackoverflow.com/a/37355865
 
 			void main()
 			{
-				gl_FragColor = vec4( vCol, 1. );
+				// Pretty basic lambertian lighting...
+				vec4 addedLights = vec4(0.0,0.0,0.0, 1.0);
+				for(int l = 0; l < NUM_POINT_LIGHTS; l++)
+				{
+				    vec3 lightDirection = normalize(vPos - pointLights[l].position);
+				    addedLights.rgb += clamp(dot(-lightDirection, vNormal), 0.0, 1.0)
+				                       * pointLights[l].color;
+				}
+				gl_FragColor = vec4(vCol,1.) * addedLights;
 			}
 		</script>
 
@@ -179,6 +201,12 @@
 				light.position.set( 1, 1, 1 ).normalize();
 				scene.add( light );
 
+				var pl = new THREE.PointLight( 0xff9999, 1, 100 );
+				pl.position.set( 50, 50, 50 );
+				scene.add( pl );
+				var pl2 = new THREE.PointLight( 0x99ff99, 1, 100 );
+				pl2.position.set( -50, 50, 50 );
+				scene.add( pl2 );
 
 				instancedGeometry = new THREE.InstancedBufferGeometry();
 				instancedGeometry.maxInstancedCount = liveInstances;
@@ -333,14 +361,18 @@
 				}
 				instancedGeometry.addAttribute( 'id', new THREE.InstancedBufferAttribute( idArray, 1, 1 ) );
 
-				var imat = new THREE.RawShaderMaterial( {
-					uniforms: {
-						numInstances: { value: 0.0 },
-						time: { value: 0.0 }
-					},
+				var imat = new THREE.ShaderMaterial( {
+					uniforms: THREE.UniformsUtils.merge([
+						THREE.UniformsLib['lights'],
+						{
+							numInstances: { value: 0.0 },
+							time: { value: 0.0 },
+						}
+					]),
 					vertexShader: document.getElementById( 'instanceVertexShader' ).textContent,
 					fragmentShader: document.getElementById( 'instanceFragmentShader' ).textContent,
-					side: THREE.BackSide
+					side: THREE.BackSide,
+					lights: true,
 				} );
 
 
@@ -396,6 +428,7 @@
 						//wireframe: true
 						} )
 					 );
+				console.log(brushMesh);
 
 				controller1.add(brushMesh);
 
